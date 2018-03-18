@@ -33,7 +33,6 @@ NOTE: Have not tested this SQL yet since I did this mockup in phpmyadmin
     $ npm init
 	$ npm install --save express
 	$ npm install --save bootstrap
-	$ npm install --save dateformat
 	$ npm install --save ejs
 	$ npm install --save jquery
 	$ npm install --save mysql
