@@ -16,6 +16,5 @@
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
 
-*.html
-*.ejs
-*.css
+* linguist-vendored
+*.js linguist-vendored=false
