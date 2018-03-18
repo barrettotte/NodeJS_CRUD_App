@@ -17,3 +17,5 @@
 *.RTF	 diff=astextplain
 
 *.html
+*.ejs
+*.css
