@@ -1,5 +1,49 @@
 <% include ../partials/header %>
 
-<h1> This is a default page </h1>
+<br>
+<div class = "" style="margin-left:50px;margin-right:50px">
+    <div class="col s12">
+        <a href="/dvd/add" class="btn btn-success btn-lg">Add a new DVD</a>
+    </div>
+</div>
+<br>
+
+<div class="" style="margin-left:50px;margin-right:50px">
+    <div class="col s12">
+        <% if (items.length > 0) { %>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style = "width:1%;text-align:center">ID</th>
+                    <th style = "width:20%;">Title</th>
+                    <th style = "width:49%">Description</th>
+                    <th style = "width:10%">Image URL</th>
+                    <th style = "width:5%">Quantity</th>
+                    <th solspan="2" style="width:30%;text-align:center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% items.forEach(function(item, index){ %>
+                    <tr>
+                        <td style="width:1%;text-align:center"><%= index + 1 %></td>
+                        <td style="width:20%"><%= item.title %></td>
+                        <td style="width:49%"><%= item.description %></td>
+                        <td style="width:10%"><%= item.image_url %></td>
+                        <td style="width:5%"> <%= item.quantity %></td>
+                        <td solspan="2" style="width:30%;text-align:center">
+                            <a href="/dvd/edit/<%= item.ID %>" class = "btn
+                               btn-success">Edit</a>
+                            <a href="/dvd/delete/<%= item.ID %>" class ="btn
+                                btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <% } else{ %>
+            <p><strong>There are no records available</strong></p>
+        <% } %>
+    </div>
+</div>
 
 <% include ../partials/footer %>
