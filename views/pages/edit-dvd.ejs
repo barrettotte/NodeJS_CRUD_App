@@ -1,5 +1,4 @@
 <% include ../partials/header %>
-<br>
 
 <div class="row" style="margin-left:50px;margin-right:50px">
     <form action="http://localhost:3000/dvd/edit/<%= item[0].ID %>" method="post"class = "col s12">
@@ -11,9 +10,10 @@
             </div>
         </div>
         <div class="form-group row">
-            <label for="description" class="col-2 col-form-label">Description</label>
+            <label for="description" class="col-2 col-form-label">Release Date</label>
             <div class="col-10">
-                <input type="text" name="description" value="<%= item[0].description %>"class = "form-control">
+                <input type="date" name="release_date" 
+                       value="<%= item[0].release_date.toISOString().substring(0, 10) %>"class = "form-control">
             </div>
         </div>
         <div class="form-group row">
@@ -23,9 +23,21 @@
             </div>
         </div>
         <div class="form-group row">
+            <label for="description" class="col-2 col-form-label">Description</label>
+            <div class="col-10">
+                <input type="text" name="description" value="<%= item[0].description %>"class = "form-control">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="image_url" class="col-2 col-form-label">Rating</label>
+            <div class="col-10">
+                <input type="text" name="rating" value="<%= item[0].rating %>"class = "form-control">
+            </div>
+        </div>
+        <div class="form-group row">
             <label for="quantity" class="col-2 col-form-label">Quantity</label>
             <div class="col-10">
-                <input type="text" name="quantity" value="<%= item[0].quantity %>"class = "form-control">
+                <input type="number" name="quantity" min="0" value="<%= item[0].quantity %>"class = "form-control">
             </div>
         </div>
         <div class="form-group row">

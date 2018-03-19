@@ -1,9 +1,12 @@
 <% include ../partials/header %>
 
-<br>
 <div class = "" style="margin-left:50px;margin-right:50px">
     <div class="col s12">
+        <br /><br />
+        
+        <!--- Add logic for only showing up if an admin user-->
         <a href="/dvd/add" class="btn btn-success btn-lg">Add a new DVD</a>
+        
     </div>
 </div>
 <br>
@@ -14,28 +17,38 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style = "width:1%;text-align:center">ID</th>
-                    <th style = "width:20%;">Title</th>
-                    <th style = "width:49%">Description</th>
-                    <th style = "width:10%">Image URL</th>
-                    <th style = "width:5%">Quantity</th>
+                    <!--<th style = "width:1%;text-align:center">ID</th>-->
+                    <th style="width:15%;">Title</th>
+                    <th style="width:10%;">Release Date</th>
+                    <th style="width:8%;text-align:center;">Cover Art</th>
+                    <th style="width:40%;">Description</th>
+                    <th style="width:10%;text-align:center;">Rating</th>
+                    <th style="width:5%;">Quantity</th>
+                    
+                    <!--- Add logic for only showing up if an admin user-->
                     <th solspan="2" style="width:30%;text-align:center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <% items.forEach(function(item, index){ %>
                     <tr>
-                        <td style="width:1%;text-align:center"><%= index + 1 %></td>
-                        <td style="width:20%"><%= item.title %></td>
-                        <td style="width:49%"><%= item.description %></td>
-                        <td style="width:10%"><%= item.image_url %></td>
-                        <td style="width:5%"> <%= item.quantity %></td>
+                        <!--<td style="width:1%;text-align:center"><%= index + 1 %></td>-->
+                        <td style="width:15%;"><%= item.title %></td>
+                        <td style="width:10%;"><%= item.release_date.toISOString().substring(0, 10) %></td>
+                        <td style="width:8%;"><img src="<%= item.image_url %>"
+                            alt="<%= item.title %>" width=125px; height=175px;/></td>
+                        <td style="width:40%;"><%= item.description %></td>
+                        <td style="width:10%;text-align:center;"><%= item.rating %></td>
+                        <td style="width:5%;text-align:center;"> <%= item.quantity %></td>
+                        
+                        <!--- Add logic for only showing up if an admin user-->
                         <td solspan="2" style="width:30%;text-align:center">
-                            <a href="/dvd/edit/<%= item.ID %>" class = "btn
-                               btn-success">Edit</a>
-                            <a href="/dvd/delete/<%= item.ID %>" class ="btn
-                                btn-danger">Delete</a>
+                            <br><br>
+                            <a href="/dvd/edit/<%= item.ID %>" class = "btn btn-success">Edit</a>
+                            <br><br>
+                            <a href="/dvd/delete/<%= item.ID %>" class ="btn btn-danger">Delete</a>
                         </td>
+                        
                     </tr>
                 <% }); %>
             </tbody>
@@ -45,5 +58,3 @@
         <% } %>
     </div>
 </div>
-
-<% include ../partials/footer %>
