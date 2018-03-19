@@ -49,6 +49,6 @@ NOTE: Have not tested this SQL yet since I did this mockup in phpmyadmin
    
    
 ## Screenshots
-![add](https://user-images.githubusercontent.com/15623775/37568694-563230e2-2aaf-11e8-8c5a-ccbe13e26479.PNG)
-![edit](https://user-images.githubusercontent.com/15623775/37568701-6a761dac-2aaf-11e8-9a54-c40a34463f9b.PNG)
-![index](https://user-images.githubusercontent.com/15623775/37568705-720c5ca2-2aaf-11e8-896b-8967cbb07d86.PNG)
+![index](https://user-images.githubusercontent.com/15623775/37618448-acbb6a0e-2b8c-11e8-867f-536bcb9ae371.PNG)
+![quantity](https://user-images.githubusercontent.com/15623775/37618449-ace28274-2b8c-11e8-9394-e122608c541e.PNG)
+![search](https://user-images.githubusercontent.com/15623775/37618450-ad10483a-2b8c-11e8-9037-027ad701ba71.PNG)
