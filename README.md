@@ -23,6 +23,7 @@ This web application is now hosted using Heroku!
    * jquery: 3.3.1
    * moviedb: 0.2.10
    * mysql: 2.15.0
+   * promise: 8.0.1
    * tether: 1.4.3
   
   ```
@@ -35,6 +36,7 @@ This web application is now hosted using Heroku!
 	$ npm install --save moviedb
 	$ npm install --save body-parser
 	$ npm install --save express-partials
+	$ npm install --save promise
 	$ npm install --save tether
   ```
    
