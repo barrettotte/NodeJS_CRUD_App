@@ -38,7 +38,8 @@ app.use(express.static(__dirname + '/public'));
 
 //Assign site constants
 const siteTitle = "CRUD APP";
-const baseURL = "http://localhost:" + app.get('port') + "/";
+const baseURL = "/";
+//const baseURL = "http://localhost:" + app.get('port') + "/";
 const TMDB_API_KEY = "244a059cc1db5224bab95119b674815b"; //Oh no don't steal my api key!! D:
 const TMDB_BasePoster = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2/';
 
