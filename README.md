@@ -10,7 +10,7 @@ This web application is now hosted using Heroku!
 
 
 ## Database setup 
- * Use mySQL Workbench to ClearDB MySQL server using provided credentials.
+ * Use mySQL Workbench to connect to ClearDB MySQL server using provided credentials.
  * Execute SQL code located in mydb.sql to create the tables.
 
 
