@@ -1,7 +1,7 @@
 <% include ../partials/header %>
 
 <div class="col" style="margin-right:50px">
-     <form action="http://localhost:5000/dvd/add/:<%= TMDB_data.id %>" method="post" class="col s12">
+     <form action="/dvd/add/:<%= TMDB_data.id %>" method="post" class="col s12">
         <table class="table">
             <thead>
                  <tr>
@@ -43,7 +43,7 @@
              </div>
          </div>
     </form>
-    <form action="http://localhost:5000/" method="get" class="col s12">
+    <form action="/" method="get" class="col s12">
         <label for="" class="col-1 col-form-label" style="color:#ffffff"></label>
         <br /> <br/>
         <input type="submit" name="back" value="Return Home" class="btn btn-primary btn-lg">

@@ -6,41 +6,7 @@
         - Requires XAMPP server running with Apache and MySQL active.
         - phpmyadmin = http://127.0.0.1:{ApachePort}/phpmyadmin 
         - MovieDB API  https://www.themoviedb.org/documentation/api?language=en
-        - Heroku Deployment https://www.youtube.com/watch?v=2OGHdii_42s
-        
-        - Database Creation SQL:
-        
-            create database mydb;
-            use mydb;
-            
-            CREATE TABLE Users(
-                userID INT(11) NOT NULL AUTO_INCREMENT,
-                username VARCHAR(20) NOT NULL,
-                first_name VARCHAR(20) NOT NULL,
-                last_name VARCHAR(20) NOT NULL,
-                email VARCHAR(40) NOT NULL,
-                password VARCHAR(20) NOT NULL
-                PRIMARY KEY (userID)
-            );
-            
-            CREATE TABLE Movies(
-                movieID INT(45) NOT NULL,
-                title VARCHAR(45) NOT NULL,
-                genre VARCHAR(20) NOT NULL,
-                rating VARCHAR(20) NOT NULL,
-                year INT(11) NOT NULL,
-                watched CHAR(1) NOT NULL,
-                userID INT(11) NOT NULL
-            );
-            
-            CREATE TABLE UserReviews(
-                reviewID INT(11) NOT NULL AUTO_INCREMENT,
-                title VARCHAR(20) NOT NULL,
-                quant_review INT(11) NOT NULL,
-                qual_review TEXT(255) NOT NULL,
-                movieID INT(11) NOT NULL,
-                userID INT(11) NOT NULL
-            );
+        - Heroku https://hidden-falls-46978.herokuapp.com/
 */
 
 
@@ -50,7 +16,6 @@ var express = require('express');
 var http = require('http');
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
-var async = require('async');
 var app = express();
 
 
@@ -68,7 +33,7 @@ app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
 app.use('/js', express.static(__dirname + '/node_modules/tether/dist/js'));
 app.use('/js', express.static(__dirname + '/node_modules/jquery/dist'));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
-app.use(express.static(__dirname + 'public'));  
+app.use(express.static(__dirname + '/public')); 
 
 
 //Assign site constants
@@ -91,8 +56,6 @@ const db_config = {
     password: "e0578f76",
 	database: "heroku_0e9173ce5e46dd4"
     
-
-    
     /*
     //XAMPP Config:
     host: "localhost",
@@ -105,7 +68,7 @@ var dbConnection;
 
 
 
-//Fix mySQL timeout problem
+//Fix ClearDB mySQL timeout problem
 function handleDisconnect(){
     dbConnection = mysql.createConnection(db_config);
     dbConnection.connect(function(err){
@@ -155,7 +118,7 @@ app.get('/', function (request, response){
                     pageTitle : "Movies",
                     movies : null,
                     images : null,
-                    overviews : null
+                    overviews : null,
                 }); 
             }
             else{
@@ -170,7 +133,7 @@ app.get('/', function (request, response){
                                 pageTitle : "Movies",
                                 movies : result,
                                 images : images,
-                                overviews : overviews
+                                overviews : overviews,
                             });  
                         }
                     });                       
@@ -198,7 +161,7 @@ app.get('/dvd/add/:movieID', function(request, response){
         response.render('pages/add-dvd.ejs', {
             siteTitle : siteTitle,
             pageTitle : "Add Selected Movie",
-            TMDB_data : result
+            TMDB_data : result,
         });
     });
 });
@@ -211,8 +174,6 @@ app.post('/dvd/add/:movieID', function(request, response){
     var id = ("" + request.params.movieID).substring(1, request.params.movieID.length);
     
     TheMovieDB.movieInfo({id: id}, function(err, result){
-        
-        //var desc = (result.overview.replace("'", " ")).replace('"', " ");
         
         var query = "INSERT INTO Movies (movieID, title, genre, rating, " +
                     "year, watched, userID)";
@@ -240,10 +201,6 @@ app.post('/dvd/add/:movieID', function(request, response){
 //Search for entries of Movies from TMDB
 app.post('/dvd/add', function(request, response){
     
-    /*Add logic for looking through already available DVDs here...
-        That way we can just add quantity instead of searching again
-        for something we already have.
-    */
     /*NOTE: Due to limited queries/second from TMDB's API,
         this will only show the first 20 entries. Implementing pages
         would be a workaround for this.
@@ -276,7 +233,7 @@ app.get('/dvd/edit/:movieID', function(request, response){
         response.render('pages/edit-dvd.ejs',{
             siteTitle : siteTitle,
             pageTitle : "Editing Movie : " + result[0].title,
-            movie : result
+            movie : result,
         });
     });
 });

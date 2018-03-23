@@ -1,7 +1,7 @@
 <% include ../partials/header %>
 
 <div class="row" style="margin-left:50px;margin-right:50px">
-    <form action="http://localhost:5000/dvd/edit/<%= movie[0].movieID %>" method="post"class = "col s12">
+    <form action="/dvd/edit/<%= movie[0].movieID %>" method="post"class = "col s12">
         <input type="hidden" name="movieID" value="<%= movie[0].movieID %>">
         <div class="form-group row">
             <label for="title" class="col-2 col-form-label">Title</label>
