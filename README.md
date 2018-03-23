@@ -1,27 +1,18 @@
 ## NodeJS_CRUD_App
 Simple CRUD application using NodeJS, ExpressJS, EJS, Bootstrap, and MySQL.
-This also works with TheMovieDB API to pull information about Movie releases.
-This is meant to be a small tutorial for a DVD rental application.
-Hosted at **localhost:3000**
+This application works with TheMovieDB API to pull information about Movie releases.
+Currently, the application is hosted using the free option of Heroku and the ClearDB add-on.
+This is meant to be a small tutorial for a Movie Tracking/Reviewing Application.
+
+## Application
+This web application is now hosted using Heroku!
+[https://hidden-falls-46978.herokuapp.com/](https://hidden-falls-46978.herokuapp.com/)
+
 
 ## Database setup 
-NOTE: Have not tested this SQL yet since I did this mockup in phpmyadmin
-```SQL
-  create database mydb;
-  use mydb;
-            
-  CREATE TABLE dvdlist(
-      ID int(11) NOT NULL auto_increment,
-      title varchar(50) NOT NULL,
-      description text NOT NULL,
-      quantity int(11) NOT NULL,
-      image_url text NOT NULL,
-      TMDB_ID int(11) NOT NULL
-      release_date date NOT NULL,
-      rating varchar(5) NOT NULL,
-      PRIMARY KEY (ID)
-   );
-  ```
+ * Use mySQL Workbench to ClearDB MySQL server using provided credentials.
+ * Execute SQL code located in mydb.sql to create the tables.
+
 
 ## Install Modules
    * body-parser: 1.18.2
