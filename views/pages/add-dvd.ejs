@@ -1,49 +1,49 @@
 <% include ../partials/header %>
 
 <div class="col" style="margin-right:50px">
-     <form action="http://localhost:3000/dvd/add/:<%= movieData.id %>" method="post" class="col s12">
+     <form action="http://localhost:5000/dvd/add/:<%= TMDB_data.id %>" method="post" class="col s12">
         <table class="table">
             <thead>
                  <tr>
-                     <th style= "width:8%;text-align:center">TMDB ID</th>
-                         <th style="width:15%;">Title</th>
-                         <th style="width:10%;">Release Date</th>
-                         <th style="width:8%;text-align:center">Cover Art</th>
-                         <th style="width:40%">Overview</th>
-                         <th style="width:10%;text-align:center">Rating</th>
-                         <th style="width:5%">Select</th>
-                     </tr>
+                    <th style= "width:8%;text-align:center">Movie ID</th>
+                    <th style="width:15%;">Title</th>
+                    <th style="width:10%">Genre</th>
+                    <th style="width:10%;text-align:center">Rating</th>
+                    <th style="width:10%;">Release Date</th>
+                    <th style="width:8%;text-align:center">Cover Art</th>
+                    <th style="width:40%">Overview</th>
              </thead>
              <tbody>
                  <tr>
-                    <td style="width:8%;text-align:center"><%= movieData.id %></td>
-                    <td style="width:15%"><%= movieData.title %></td>
-                    <td style="width:10%"><%= movieData.release_date %></td>
-                    <td style = "width:8%">
-                        <img src="<%= 'https://image.tmdb.org/t/p/w185_and_h278_bestv2/'+ movieData.poster_path %>"
-                            alt= "<%= movieData.title %>" width = 125px; height = 175px;/>
+                    <td style="width:8%;text-align:center"><%= TMDB_data.id %></td>
+                    <td style="width:15%"><%= TMDB_data.title %></td>
+                    <td style="width:10%;"><%= "UNIMPLEMENTED" %></td>
+                    <td style="width:10%;text-align:center"><%= TMDB_data.vote_average %></td>
+                    <td style="width:10%"><%= TMDB_data.release_date %></td>
+                    <td style="width:8%">
+                        <img src="<%= 'https://image.tmdb.org/t/p/w185_and_h278_bestv2/'+ TMDB_data.poster_path %>"
+                        alt= "<%= TMDB_data.title %>" width = 125px; height = 175px;/>
                     </td>
-                    <td style="width:40%"><%= movieData.overview %></td>
-                    <td style="width:10%;text-align:center"><%= movieData.vote_average %></td>
+                    <td style="width:40%"><%= TMDB_data.overview %></td>
                  </tr>
              </tbody>
          </table>
          <hr>
          <br>
          <div class="form-group row">
-             <label for="quantity" class="col-2 col-form-label">Quantity To Add</label>
+             <label for="quantity" class="col-2 col-form-label">Watched?</label>
              <div class="col-10">
-                 <input type="number" name="quantity" min="0" value="" style="width:10%" class="form-control">
+                 <input type="number" name="watched" min="0" max="1" value="" style="width:10%" class="form-control">
              </div>
          </div>
          <div class="form-group row">
-             <label for="" class="col-2 col-form-label" style="color:#ffffff">Click here to submit</label>
+             <label for="" class="col-2 col-form-label" style="color:#ffffff"></label>
              <div class="col-10">
-                 <input type="submit" name="addDVD" value="Add Entry" class="btn btn-primary btn-lg">
+                 <input type="submit" name="addMovie" value="Add Entry" class="btn btn-primary btn-lg">
              </div>
          </div>
     </form>
-    <form action="http://localhost:3000/" method="get" class="col s12">
+    <form action="http://localhost:5000/" method="get" class="col s12">
         <label for="" class="col-1 col-form-label" style="color:#ffffff"></label>
         <br /> <br/>
         <input type="submit" name="back" value="Return Home" class="btn btn-primary btn-lg">

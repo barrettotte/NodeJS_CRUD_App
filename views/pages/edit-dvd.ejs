@@ -1,49 +1,49 @@
 <% include ../partials/header %>
 
 <div class="row" style="margin-left:50px;margin-right:50px">
-    <form action="http://localhost:3000/dvd/edit/<%= item[0].ID %>" method="post"class = "col s12">
-        <input type="hidden" name="ID" value="<%= item[0].ID %>">
+    <form action="http://localhost:5000/dvd/edit/<%= movie[0].movieID %>" method="post"class = "col s12">
+        <input type="hidden" name="movieID" value="<%= movie[0].movieID %>">
         <div class="form-group row">
             <label for="title" class="col-2 col-form-label">Title</label>
             <div class="col-10">
-                <input type="text" name="title" value="<%= item[0].title %>"class = "form-control">
+                <input type="text" name="title" value="<%= movie[0].title %>"class = "form-control">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="genre" class="col-2 col-form-label">Genre</label>
+            <div class="col-10">
+                <input type="text" name="genre" value="<%= movie[0].genre %>"class = "form-control">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rating" class="col-2 col-form-label">Rating</label>
+            <div class="col-10">
+                <input type="text" name="rating" value="<%= movie[0].rating %>"class = "form-control">
             </div>
         </div>
         <div class="form-group row">
             <label for="description" class="col-2 col-form-label">Release Date</label>
             <div class="col-10">
                 <input type="date" name="release_date" 
-                       value="<%= item[0].release_date.toISOString().substring(0, 10) %>"class = "form-control">
+                       value="<%= movie[0].year%>"class = "form-control">
             </div>
         </div>
         <div class="form-group row">
-            <label for="image_url" class="col-2 col-form-label">Image URL</label>
+            <label for="watched" class="col-2 col-form-label">Watched</label>
             <div class="col-10">
-                <input type="text" name="image_url" value="<%= item[0].image_url %>"class = "form-control">
+                <input type="text" name="watched" value="<%= movie[0].watched %>"class = "form-control">
             </div>
         </div>
         <div class="form-group row">
-            <label for="description" class="col-2 col-form-label">Description</label>
+            <label for="userID" class="col-2 col-form-label">User ID</label>
             <div class="col-10">
-                <input type="text" name="description" value="<%= item[0].description %>"class = "form-control">
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="image_url" class="col-2 col-form-label">Rating</label>
-            <div class="col-10">
-                <input type="text" name="rating" value="<%= item[0].rating %>"class = "form-control">
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="quantity" class="col-2 col-form-label">Quantity</label>
-            <div class="col-10">
-                <input type="number" name="quantity" min="0" value="<%= item[0].quantity %>"class = "form-control">
+                <input type="number" name="userID" value="<%= movie[0].userID %>"class = "form-control">
             </div>
         </div>
         <div class="form-group row">
             <label for="" class="col-2 col-form-label" style="color:#ffffff">Click here to submit</label>
             <div class="col-10">
-                <input type="submit" name="submit" value="Save DVD" class="btn btn-primary btn-lg">
+                <input type="submit" name="submit" value="Save Movie" class="btn btn-primary btn-lg">
             </div>
         </div>
     </form>

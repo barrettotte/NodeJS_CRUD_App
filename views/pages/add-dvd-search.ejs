@@ -3,7 +3,7 @@
 
 <div class="col" style="margin-right:50px">
     
-    <form action="http://localhost:3000/dvd/add" method="post" class="col s12">
+    <form action="http://localhost:5000/dvd/add" method="post" class="col s12">
         <div class="form-group row">
             <label for="title" class="col-2 col-form-label">Title</label>
             <div class="col-10">
@@ -18,41 +18,43 @@
         </div>
     </form> 
 
-    <% if (items != null){ %>
+    <% if (movies != null){ %>
         <table class="table">
             <thead>
                 <tr>
-                    <th style= "width:8%;text-align:center">TMDB ID</th>
-                        <th style="width:15%;">Title</th>
-                        <th style="width:10%;">Release Date</th>
-                        <th style="width:8%;text-align:center">Cover Art</th>
-                        <th style="width:40%">Overview</th>
-                        <th style="width:10%;text-align:center">Rating</th>
-                        <th style="width:5%">Select</th>
-                    </tr>
+                    <th style= "width:8%;text-align:center">Movie ID</th>
+                    <th style="width:15%;">Title</th>
+                    <th style="width:10%">Genre</th>
+                    <th style="width:10%;text-align:center">Rating</th>
+                    <th style="width:10%;">Release Date</th>
+                    <th style="width:8%;text-align:center">Cover Art</th>
+                    <th style="width:40%">Overview</th>
+                    <th style="width:5%">Select</th>
+                </tr>
             </thead>
             <tbody>
-                <% items.forEach(function(item, index){ %>
+                <% movies.forEach(function(movie, index){ %>
                     <tr>
-                        <td style="width:8%;text-align:center"><%= item.id %></td>
-                        <td style="width:15%"><%= item.title %></td>
-                        <td style="width:10%"><%= item.release_date %></td>
+                        <td style="width:8%;text-align:center"><%= movie.id %></td>
+                        <td style="width:15%"><%= movie.title %></td>
+                        <td style="width:10%;"><%= "UNIMPLEMENTED" %></td>
+                        <td style="width:10%;text-align:center"><%= movie.vote_average %></td>
+                        <td style="width:10%"><%= movie.release_date %></td>
                         <td style = "width:8%">
-                            <img src="<%= 'https://image.tmdb.org/t/p/w185_and_h278_bestv2/'+ item.poster_path %>"
-                            alt= "<%= item.title %>" width = 125px; height = 175px;/>
+                            <img src="<%= 'https://image.tmdb.org/t/p/w185_and_h278_bestv2/'+ movie.poster_path %>"
+                            alt= "<%= movie.title %>" width = 125px; height = 175px;/>
                         </td>
-                        <td style="width:40%"><%= item.overview %></td>
-                        <td style="width:10%;text-align:center"><%= item.vote_average %></td>
+                        <td style="width:40%"><%= movie.overview %></td>
                         <td style = "width:5%">
                             <br>
-                            <a href="/dvd/add/<%= item.id %>" class = "btn btn-success">Select</a>
+                            <a href="/dvd/add/<%= movie.id %>" class = "btn btn-success">Select</a>
                         </td>
                     </tr>
                 <% }); %>
             </tbody>
         </table>
     <% } %>
-    <form action="http://localhost:3000/" method="get" class="col s12">
+    <form action="http://localhost:5000/" method="get" class="col s12">
         <label for="" class="col-1 col-form-label" style="color:#ffffff"></label>
         <br /> <br/>
         <input type="submit" name="back" value="Return Home" class="btn btn-primary btn-lg">

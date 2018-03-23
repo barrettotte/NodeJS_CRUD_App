@@ -6,32 +6,40 @@
         - Requires XAMPP server running with Apache and MySQL active.
         - phpmyadmin = http://127.0.0.1:{ApachePort}/phpmyadmin 
         - MovieDB API  https://www.themoviedb.org/documentation/api?language=en
+        - Heroku Deployment https://www.youtube.com/watch?v=2OGHdii_42s
         
-        - DVD Entry Columns: (? = optional)
-            - Title (VARCHAR (25))
-            - URL to MovieDB for Cover Image    (TEXT)
-            - Description from MovieDB          (TEXT)
-            - Quantity Available to Rent        (INT)
-            - Rating from MovieDB               (INT)  ?
-            - Genre from MovieDB                (VARCHAR(XX)) ?
-            - URL to trailer from MovieDB       (TEXT) ?
-            - Release Data                      (DATE) ?
-            
         - Database Creation SQL:
         
             create database mydb;
             use mydb;
             
-            CREATE TABLE dvdlist(
-            ID int(11) NOT NULL auto_increment,
-            title varchar(50) NOT NULL,
-            description text NOT NULL,
-            quantity int(11) NOT NULL,
-            image_url text NOT NULL,
-            TMDB_ID int(11) NOT NULL
-            release_date date NOT NULL,
-            rating varchar(5) NOT NULL,
-            PRIMARY KEY (ID)
+            CREATE TABLE Users(
+                userID INT(11) NOT NULL AUTO_INCREMENT,
+                username VARCHAR(20) NOT NULL,
+                first_name VARCHAR(20) NOT NULL,
+                last_name VARCHAR(20) NOT NULL,
+                email VARCHAR(40) NOT NULL,
+                password VARCHAR(20) NOT NULL
+                PRIMARY KEY (userID)
+            );
+            
+            CREATE TABLE Movies(
+                movieID INT(45) NOT NULL,
+                title VARCHAR(45) NOT NULL,
+                genre VARCHAR(20) NOT NULL,
+                rating VARCHAR(20) NOT NULL,
+                year INT(11) NOT NULL,
+                watched CHAR(1) NOT NULL,
+                userID INT(11) NOT NULL
+            );
+            
+            CREATE TABLE UserReviews(
+                reviewID INT(11) NOT NULL AUTO_INCREMENT,
+                title VARCHAR(20) NOT NULL,
+                quant_review INT(11) NOT NULL,
+                qual_review TEXT(255) NOT NULL,
+                movieID INT(11) NOT NULL,
+                userID INT(11) NOT NULL
             );
 */
 
@@ -42,6 +50,7 @@ var express = require('express');
 var http = require('http');
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
+var async = require('async');
 var app = express();
 
 
@@ -50,6 +59,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //View Engine --- Template parsing with EJS types
 app.set('view engine', 'ejs');
+
+//Setup Port for Heroku Deployment
+app.set('port', (process.env.PORT || 5000));
 
 // Import all JavaScript and CSS files for application
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
@@ -60,97 +72,163 @@ app.use(express.static(__dirname + 'public'));
 
 
 //Assign site constants
-const portNumber = "3000";
 const siteTitle = "CRUD APP";
-const baseURL = "http://localhost:" + portNumber + "/";
+const baseURL = "http://localhost:" + app.get('port') + "/";
 const TMDB_API_KEY = "244a059cc1db5224bab95119b674815b"; //Oh no don't steal my api key!! D:
-const TMDB_BasePoster = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2';
+const TMDB_BasePoster = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2/';
 
 //Use TheMovieDB API to pull information about movies
 const TheMovieDB = require('moviedb')(TMDB_API_KEY);
 
 
 
-//Database connection details
-const connection = mysql.createConnection({
-	host: "localhost",
-	user: "root",
-	password: "",
-	database: "mydb"
-});
+//Database connection details for Heroku and ClearDB
+const db_config = {
+    
+    //Heroku Config:
+    host: "us-cdbr-iron-east-05.cleardb.net",
+    user: "b34f3653f7e526",
+    password: "e0578f76",
+	database: "heroku_0e9173ce5e46dd4"
+    
+
+    
+    /*
+    //XAMPP Config:
+    host: "localhost",
+    user: "root",
+    password: "root",
+    database: "mydb"
+    */
+};
+var dbConnection;
+
+
+
+//Fix mySQL timeout problem
+function handleDisconnect(){
+    dbConnection = mysql.createConnection(db_config);
+    dbConnection.connect(function(err){
+        if(err){
+            console.log('Error when connecting to DB: ', err);
+            setTimeout(handleDisconnect, 2000);
+        }
+    });
+    dbConnection.on('error', function(err){
+        console.log('DB ERROR ', err);
+        if(err.code === 'PROTOCOL_CONNECTION_LOST'){
+            console.log('Lost connection. Reconnecting...');
+            handleDisconnect();
+        }
+        else{
+            throw err;
+        }
+    });
+}
+
+
+
+//Setup Database connection and handle timeout problems
+handleDisconnect();
 
 
 
 // Connect to Server
-var server = app.listen(portNumber, function(){
-	console.log("Server listening on 127.0.0.1:" + portNumber + " ...");
+var server = app.listen(app.get('port'), function(){
+	console.log("Server listening on " + baseURL + " ...");
 });
+
 
 
 
 //Load default page and list DVDs from mySQL DB
-app.get('/', function (req, res){
-    connection.query("SELECT * FROM dvdlist ORDER BY ID DESC", function (err, result){
-        res.render('pages/index.ejs', {
-            siteTitle : siteTitle,
-            pageTitle : "DVD List",
-            items : result
+app.get('/', function (request, response){
+    var images = [];
+    var overviews = [];
+    
+        dbConnection.query("SELECT * FROM Movies ORDER BY movieID DESC", function (err, result){
+            
+            if(result.length === 0 || result === null){
+                console.log("Table is empty.");
+                response.render('pages/index.ejs', {
+                    siteTitle : siteTitle,
+                    pageTitle : "Movies",
+                    movies : null,
+                    images : null,
+                    overviews : null
+                }); 
+            }
+            else{
+                result.forEach(function (movie,index){
+                    TheMovieDB.movieInfo({id: result[index].movieID}, function(err, data){
+                        images[index] = TMDB_BasePoster + data.poster_path;
+                        overviews[index] = data.overview;
+
+                        if(overviews.length === result.length){
+                            response.render('pages/index.ejs', {
+                                siteTitle : siteTitle,
+                                pageTitle : "Movies",
+                                movies : result,
+                                images : images,
+                                overviews : overviews
+                            });  
+                        }
+                    });                       
+                });
+            }  
         });
-    });
 });
 
 
 
-//Display form to Search for DVD Entry to Add
-app.get('/dvd/add', function (req, res){
-    res.render('pages/add-dvd-search.ejs', {
+//Display form to Search for Movie Entry to Add
+app.get('/dvd/add', function (request, response){
+    response.render('pages/add-dvd-search.ejs', {
         siteTitle : siteTitle,
-        pageTitle : "Search new DVD",
-        items : null,
-        isSearch : true,
+        pageTitle : "Search For Movie",
+        movies : null,
     });
 });
 
 
 
 //Display form for quantity of selected DVD
-app.get('/dvd/add/:TMDB_ID', function(request, response){
-    TheMovieDB.movieInfo({id: request.params.TMDB_ID}, function(err, res){
+app.get('/dvd/add/:movieID', function(request, response){
+    TheMovieDB.movieInfo({id: request.params.movieID}, function(err, result){
         response.render('pages/add-dvd.ejs', {
             siteTitle : siteTitle,
             pageTitle : "Add Selected Movie",
-            isSearch : false,
-            movieData : res
+            TMDB_data : result
         });
     });
 });
 
 
 
-//Add selected DVD with specified quantity to DB
-app.post('/dvd/add/:TMDB_ID', function(request, response){
+//Add selected DVD  to DB
+app.post('/dvd/add/:movieID', function(request, response){
     
-    var id = (""+request.params.TMDB_ID).substring(1, request.params.TMDB_ID.length);
+    var id = ("" + request.params.movieID).substring(1, request.params.movieID.length);
     
-    TheMovieDB.movieInfo({id: id}, function(err, res){
+    TheMovieDB.movieInfo({id: id}, function(err, result){
         
-        var desc = (res.overview.replace("'", " ")).replace('"', " ");
+        //var desc = (result.overview.replace("'", " ")).replace('"', " ");
         
-        var query = "INSERT INTO dvdlist (title, description, quantity, " +
-                                            "image_url, TMDB_ID, release_date, rating)";
-        query += " VALUES ("
-            query += " '"   + res.title + "',";
-            query += " '"   + desc + "',";
-            query += " "    + request.body.quantity + ",";
-            query += " '"   + TMDB_BasePoster + res.poster_path + "',";
-            query += " "    + id + ",";
-            query += " '"   + res.release_date + "',";
-            query += " "    + res.vote_average;
+        var query = "INSERT INTO Movies (movieID, title, genre, rating, " +
+                    "year, watched, userID)";
+        query += " VALUES (";
+            query += "'" + id + "',";
+            query += " '" + result.title + "',";
+            query += " 'UNIMPLEMENTED',";   //NOT IMPLEMENTED!
+            query += " '" + result.vote_average + "',";
+            query += " '" + result.release_date + "',";
+            query += " " + "0" + ",";
+            query += " " + 12345; // NOT IMPLEMENTED!
         query += ")";
         
         console.log("[ADDING ENTRY] Query  :\n" + query);
         
-        connection.query(query, function(err, result){
+        dbConnection.query(query, function(err, result){
             if(err) throw err;
             response.redirect(baseURL);
         });
@@ -159,7 +237,7 @@ app.post('/dvd/add/:TMDB_ID', function(request, response){
 
 
 
-//Search for entries of DVDs from TMDB
+//Search for entries of Movies from TMDB
 app.post('/dvd/add', function(request, response){
     
     /*Add logic for looking through already available DVDs here...
@@ -171,15 +249,15 @@ app.post('/dvd/add', function(request, response){
         would be a workaround for this.
     */
     
-    TheMovieDB.searchMovie({query: request.body.title }, function(err, res){
-        if(res != null && res.total_results >= 1){
+    TheMovieDB.searchMovie({query: request.body.title }, function(err, result){
+        if(result != null && result.total_results >= 1){
             //console.log(res.results);
-            console.log("[ADDING ENTRY] Found " + res.total_results + " results.");
+            console.log("[ADDING ENTRY] Found " + result.total_results + " results.");
             console.log("[ADDING ENTRY] Loading search results...");
             response.render('pages/add-dvd-search.ejs', {
                 siteTitle : siteTitle,
-                pageTitle : "Select DVD",
-                items : res.results,
+                pageTitle : "Select Movie",
+                movies : result.results,
             });
         }
         else{
@@ -191,51 +269,55 @@ app.post('/dvd/add', function(request, response){
 
 
 
-//Display form to edit dvd entry
-app.get('/dvd/edit/:dvdID', function(req, res){
-    connection.query("SELECT * FROM dvdlist WHERE ID = '" + req.params.dvdID + "'", function(err,result){
-        res.render('pages/edit-dvd.ejs',{
+//Display form to edit movie entry
+app.get('/dvd/edit/:movieID', function(request, response){
+    dbConnection.query("SELECT * FROM Movies WHERE movieID = '" + request.params.movieID + "'", 
+    function(err,result){
+        response.render('pages/edit-dvd.ejs',{
             siteTitle : siteTitle,
-            pageTitle : "Editing DVD : " + result[0].title,
-            item : result
+            pageTitle : "Editing Movie : " + result[0].title,
+            movie : result
         });
     });
 });
 
 
 
-//Update dvd entry with edited data
-app.post('/dvd/edit/:dvdID', function(req, res){
-    var query = "UPDATE dvdlist SET";
-    query += " title = '" + req.body.title + "',";
-    query += " release_date = '" + req.body.release_date + "',"
-    query += " image_url = '" + req.body.image_url + "',";
-    query += " description = '" + req.body.description + "',";
-    query += " rating = " + req.body.rating + ",";
-    query += " quantity = " + req.body.quantity + "";
-    query += " WHERE dvdlist . ID = " + req.body.ID + "";
+//Update movie entry with edited data
+app.post('/dvd/edit/:movieID', function(request, response){
+    var query = "UPDATE Movies SET";
+    query += " title = '" + request.body.title + "',";
+    query += " genre = 'UNIMPLEMENTED',";
+    query += " rating = '" + request.body.rating + "',";
+    query += " year = '" + request.body.release_date + "',";
+    query += " watched = '" + request.body.watched + "',";
+    query += " userID = '" + request.body.userID + "',";
+    
+    query += " WHERE movieID = " + request.body.movieID + ";";
     
     console.log("[EDITING ENTRY] Query :\n" + query);
     
-    connection.query(query, function(err, result){
+    dbConnection.query(query, function(err, result){
         if(err) throw err;
         if(result.affectedRows){
-            res.redirect(baseURL);   
+            response.redirect(baseURL);   
         }
     });
 });
 
 
 
-//Delete dvd entry from database
-app.get('/dvd/delete/:dvdID', function(req, res){
+//Delete movie entry from database
+app.get('/dvd/delete/:movieID', function(request, response){
     
-    console.log("[DELETING ENTRY] Deleted Item " + req.params.dvdID);
+    console.log("[DELETING ENTRY] Deleted Item " + request.params.movieID);
     
-    connection.query("DELETE FROM dvdlist WHERE ID='" + req.params.dvdID + "'", function(err, result){
+    dbConnection.query("DELETE FROM Movies WHERE movieID='" + request.params.movieID + "'", 
+    function(err, result){
         if(err) throw err;
         if(result.affectedRows){
-            res.redirect(baseURL);
+            console.log("[DELETING ENTRY] REDIRECTING]");
+            response.redirect(baseURL);   
         }
     });
 });
