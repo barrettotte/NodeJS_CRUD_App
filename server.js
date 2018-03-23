@@ -16,6 +16,7 @@ var express = require('express');
 var http = require('http');
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
+var Promise = require('promise');
 var app = express();
 
 
@@ -65,11 +66,12 @@ const db_config = {
     database: "mydb"
     */
 };
+
 var dbConnection;
+handleDisconnect();
 
 
-
-//Fix ClearDB mySQL timeout problem
+//Setup Database connection and handle timeout problems
 function handleDisconnect(){
     dbConnection = mysql.createConnection(db_config);
     dbConnection.connect(function(err){
@@ -92,11 +94,6 @@ function handleDisconnect(){
 
 
 
-//Setup Database connection and handle timeout problems
-handleDisconnect();
-
-
-
 // Connect to Server
 var server = app.listen(app.get('port'), function(){
 	console.log("Server listening on " + baseURL + " ...");
@@ -104,43 +101,93 @@ var server = app.listen(app.get('port'), function(){
 
 
 
+//Query the Movies Table for all movies
+function getMovies(){
+    return new Promise(function(resolve, reject){
+        dbConnection.query("SELECT * FROM Movies ORDER BY movieID DESC", function(err, rows, fields){
+            if(err){
+                return reject(err);
+            }
+            else{
+                return resolve(rows);
+            }
+        });
+    });
+}
+
+
+
+//Load TMDB image path and overview using movieID
+function loadDataTMDB(movieID){
+    return new Promise(function(resolve, reject){
+        TheMovieDB.movieInfo({id: movieID}, function(err, result){
+            if(err){
+                return reject(err);
+            }
+            else{
+                //data["image"] = TMDB_BasePoster + result.poster_path;
+                //data["overview"] = result.overview;
+                return resolve([(TMDB_BasePoster + result.poster_path), result.overview]);
+            }
+        });
+    });
+}
+
+
+
+//Load All TMDB image paths and overviews using Promises
+function loadAllDataTMDB(rows){
+    var images = [];
+    var overviews = [];
+    var promises = [];
+    
+    return new Promise(function(resolve, reject){
+        rows.forEach(function(row, index){
+            promises.push(loadDataTMDB(row.movieID).then(function(data){
+                images[index] = data[0];
+                overviews[index] = data[1];
+            }));
+        });
+        Promise.all(promises).then(function(data, err){
+            if(err){
+                return reject(err);
+            }
+            else{
+                return resolve([images, overviews]);
+            }
+        });
+    });
+}
+
+
 
 //Load default page and list DVDs from mySQL DB
 app.get('/', function (request, response){
-    var images = [];
-    var overviews = [];
     
-        dbConnection.query("SELECT * FROM Movies ORDER BY movieID DESC", function (err, result){
-            
-            if(result.length === 0 || result === null){
-                console.log("Table is empty.");
+    getMovies().then(function(rows){
+        if(rows.length == 0){
+            console.log("Table is empty. Rendering Page...");
+            response.render('pages/index.ejs', {
+                siteTitle : siteTitle,
+                pageTitle : "Movies",
+            });
+        }
+        else{
+            loadAllDataTMDB(rows).then(function(data){
                 response.render('pages/index.ejs', {
                     siteTitle : siteTitle,
                     pageTitle : "Movies",
-                    movies : null,
-                    images : null,
-                    overviews : null,
-                }); 
-            }
-            else{
-                result.forEach(function (movie,index){
-                    TheMovieDB.movieInfo({id: result[index].movieID}, function(err, data){
-                        images[index] = TMDB_BasePoster + data.poster_path;
-                        overviews[index] = data.overview;
-
-                        if(overviews.length === result.length){
-                            response.render('pages/index.ejs', {
-                                siteTitle : siteTitle,
-                                pageTitle : "Movies",
-                                movies : result,
-                                images : images,
-                                overviews : overviews,
-                            });  
-                        }
-                    });                       
+                    movies : rows,
+                    images : data[0],
+                    overviews : data[1]
                 });
-            }  
-        });
+            }).catch(function(e){
+                console.log(e.stack);
+            });
+        }
+    }).catch(function(e){
+        console.log(e.stack);
+    });
 });
 
 
@@ -249,7 +296,7 @@ app.post('/dvd/edit/:movieID', function(request, response){
     query += " rating = '" + request.body.rating + "',";
     query += " year = '" + request.body.release_date + "',";
     query += " watched = '" + request.body.watched + "',";
-    query += " userID = '" + request.body.userID + "',";
+    query += " userID = '" + request.body.userID + "'";
     
     query += " WHERE movieID = " + request.body.movieID + ";";
     
