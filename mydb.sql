@@ -8,33 +8,33 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema heroku_0e9173ce5e46dd4
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema heroku_0e9173ce5e46dd4
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+CREATE SCHEMA IF NOT EXISTS `heroku_0e9173ce5e46dd4` DEFAULT CHARACTER SET utf8 ;
+USE `heroku_0e9173ce5e46dd4` ;
 
 -- -----------------------------------------------------
 -- Table `mydb`.`Users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Users` (
+CREATE TABLE IF NOT EXISTS `heroku_0e9173ce5e46dd4`.`Users` (
   `userID` INT(11) NOT NULL,
   `username` VARCHAR(20) NOT NULL,
   `first_name` VARCHAR(20) NOT NULL,
   `last_name` VARCHAR(20) NOT NULL,
   `email` VARCHAR(40) NOT NULL,
   `password` VARCHAR(20) NOT NULL,
-  PRIMARY KEY (`userID`)))
+  PRIMARY KEY (`userID`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Movies`
+-- Table `heroku_0e9173ce5e46dd4`.`Movies`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Movies` (
+CREATE TABLE IF NOT EXISTS `heroku_0e9173ce5e46dd4`.`Movies` (
   `movieID` INT(11) NOT NULL,
   `title` VARCHAR(45) NOT NULL,
   `genre` VARCHAR(20) NOT NULL,
@@ -48,9 +48,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`User_Reviews`
+-- Table `heroku_0e9173ce5e46dd4`.`User_Reviews`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`User_Reviews` (
+CREATE TABLE IF NOT EXISTS `heroku_0e9173ce5e46dd4`.`User_Reviews` (
   `reviewID` INT(11) NOT NULL,
   `title` VARCHAR(45) NOT NULL,
   `quant_review` INT(11) NOT NULL,
@@ -66,3 +66,10 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- Drop All Tables
+-- SET FOREIGN_KEY_CHECKS = 0;
+-- drop table if exists Users;
+-- drop table if exists Movies;
+-- drop table if exists User_Reviews;
+-- SET FOREIGN_KEY_CHECKS = 1;

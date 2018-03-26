@@ -74,10 +74,11 @@ handleDisconnect();
 //Setup Database connection and handle timeout problems
 function handleDisconnect(){
     dbConnection = mysql.createConnection(db_config);
+    console.log("Successfully connected to Database.");
     dbConnection.connect(function(err){
         if(err){
             console.log('Error when connecting to DB: ', err);
-            setTimeout(handleDisconnect, 2000);
+            setTimeout(handleDisconnect, 5000);
         }
     });
     dbConnection.on('error', function(err){
@@ -106,6 +107,7 @@ function getMovies(){
     return new Promise(function(resolve, reject){
         dbConnection.query("SELECT * FROM Movies ORDER BY movieID DESC", function(err, rows, fields){
             if(err){
+                console.log("Error loading from DB");
                 return reject(err);
             }
             else{
@@ -119,14 +121,13 @@ function getMovies(){
 
 //Load TMDB image path and overview using movieID
 function loadDataTMDB(movieID){
+    console.log("Fetching TMDB Data for movieID: " + movieID);
     return new Promise(function(resolve, reject){
         TheMovieDB.movieInfo({id: movieID}, function(err, result){
             if(err){
                 return reject(err);
             }
             else{
-                //data["image"] = TMDB_BasePoster + result.poster_path;
-                //data["overview"] = result.overview;
                 return resolve([(TMDB_BasePoster + result.poster_path), result.overview]);
             }
         });
@@ -140,22 +141,32 @@ function loadAllDataTMDB(rows){
     var images = [];
     var overviews = [];
     var promises = [];
+    console.log("Fetching data from TMDB.");
     
     return new Promise(function(resolve, reject){
         rows.forEach(function(row, index){
             promises.push(loadDataTMDB(row.movieID).then(function(data){
                 images[index] = data[0];
                 overviews[index] = data[1];
+                console.log("Found image: " + data[0] + " for ID: " + row.movieID);
             }));
         });
-        Promise.all(promises).then(function(data, err){
-            if(err){
-                return reject(err);
-            }
-            else{
-                return resolve([images, overviews]);
-            }
-        });
+        
+        if(promises.length == rows.length){
+            console.log("All promises have been added.");
+            
+            Promise.all(promises).then(function(data, err){
+                console.log(data);
+                if(err){
+                    console.log("All TMDB Data Promises were not fulfilled!");
+                    return reject(err);
+                }
+                else{
+                    console.log("All TMDB Data Promises were fulfilled!");
+                    return resolve([images, overviews]);
+                }
+            });
+        }
     });
 }
 
@@ -163,24 +174,35 @@ function loadAllDataTMDB(rows){
 
 //Load default page and list DVDs from mySQL DB
 app.get('/', function (request, response){
-    
+    console.log("Got to Index.");
     getMovies().then(function(rows){
         if(rows.length == 0){
             console.log("Table is empty. Rendering Page...");
             response.render('pages/index.ejs', {
                 siteTitle : siteTitle,
                 pageTitle : "Movies",
+                movies : null
             });
         }
         else{
-            loadAllDataTMDB(rows).then(function(data){
-                response.render('pages/index.ejs', {
-                    siteTitle : siteTitle,
-                    pageTitle : "Movies",
-                    movies : rows,
-                    images : data[0],
-                    overviews : data[1]
-                });
+            console.log("Successfully loaded data from DB.");
+            loadAllDataTMDB(rows).then(function(data, err){
+                if(err){
+                    throw err;
+                }
+                else{
+                    
+                    console.log(data[0][0]);
+                    console.log(data[0][1]);
+                    
+                    response.render('pages/index.ejs', {
+                        siteTitle : siteTitle,
+                        pageTitle : "Movies",
+                        movies : rows,
+                        images : data[0],
+                        overviews : data[1]
+                    });
+                }
             }).catch(function(e){
                 console.log(e.stack);
             });
@@ -188,6 +210,11 @@ app.get('/', function (request, response){
     }).catch(function(e){
         console.log(e.stack);
     });
+    /*response.render('pages/index.ejs', {
+                siteTitle : siteTitle,
+                pageTitle : "Movies",
+            movies : null
+            });*/
 });
 
 
