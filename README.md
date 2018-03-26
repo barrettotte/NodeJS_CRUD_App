@@ -9,11 +9,6 @@ This web application is now hosted using Heroku!
 [https://hidden-falls-46978.herokuapp.com/](https://hidden-falls-46978.herokuapp.com/)
 
 
-## Database setup 
- * Use mySQL Workbench to connect to ClearDB MySQL server using provided credentials.
- * Execute SQL code located in mydb.sql to create the tables.
-
-
 ## Install Modules
    * body-parser: 1.18.2
    * bootstrap: 4.0.0
