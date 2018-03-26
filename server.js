@@ -51,20 +51,10 @@ const TheMovieDB = require('moviedb')(TMDB_API_KEY);
 
 //Database connection details for Heroku and ClearDB
 const db_config = {
-    
-    //Heroku Config:
     host: "us-cdbr-iron-east-05.cleardb.net",
     user: "b34f3653f7e526",
     password: "e0578f76",
 	database: "heroku_0e9173ce5e46dd4"
-    
-    /*
-    //XAMPP Config:
-    host: "localhost",
-    user: "root",
-    password: "root",
-    database: "mydb"
-    */
 };
 
 var dbConnection;
