@@ -6,6 +6,7 @@
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+SET @@auto_increment_increment=1;
 
 -- -----------------------------------------------------
 -- Schema heroku_0e9173ce5e46dd4
@@ -30,6 +31,17 @@ CREATE TABLE IF NOT EXISTS `heroku_0e9173ce5e46dd4`.`users` (
   PRIMARY KEY (`userID`))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `heroku_0e9173ce5e46dd4`.`reviews`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `heroku_0e9173ce5e46dd4`.`reviews` (
+  `reviewID` INT(11) NOT NULL,
+  `review_title` VARCHAR(45) NOT NULL,
+  `rating` INT(11) NOT NULL,
+  `review` TEXT(255) NOT NULL,
+  PRIMARY KEY (`reviewID`))
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `heroku_0e9173ce5e46dd4`.`movies`
@@ -42,23 +54,13 @@ CREATE TABLE IF NOT EXISTS `heroku_0e9173ce5e46dd4`.`movies` (
   `year` INT(11) NOT NULL,
   `watched` VARCHAR(1) NOT NULL,
   `TMDB_ID` INT(11) NOT NULL,
-  `userID` INT(11) NOT NULL,
+  `userID` INT(11),
+  `reviewID` INT(11),
   PRIMARY KEY (`movieID`),
   FOREIGN KEY (`userID`) REFERENCES `users`(`userID`),
   FOREIGN KEY (`reviewID`) REFERENCES `reviews`(`reviewID`))
 ENGINE = InnoDB;
 
-
--- -----------------------------------------------------
--- Table `heroku_0e9173ce5e46dd4`.`reviews`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `heroku_0e9173ce5e46dd4`.`reviews` (
-  `reviewID` INT(11) NOT NULL,
-  `review_title` VARCHAR(45) NOT NULL,
-  `rating` INT(11) NOT NULL,
-  `review` TEXT(255) NOT NULL,
-  PRIMARY KEY (`reviewID`))
-ENGINE = InnoDB;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
