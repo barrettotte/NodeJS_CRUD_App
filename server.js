@@ -95,7 +95,7 @@ var server = app.listen(app.get('port'), function(){
 //Query the Movies Table for all movies
 function getMovies(){
     return new Promise(function(resolve, reject){
-        dbConnection.query("SELECT * FROM Movies ORDER BY movieID DESC", function(err, rows, fields){
+        dbConnection.query("SELECT * FROM movies ORDER BY movieID DESC", function(err, rows, fields){
             if(err){
                 console.log("Error loading from DB");
                 return reject(err);
@@ -135,10 +135,10 @@ function loadAllDataTMDB(rows){
     
     return new Promise(function(resolve, reject){
         rows.forEach(function(row, index){
-            promises.push(loadDataTMDB(row.movieID).then(function(data){
+            promises.push(loadDataTMDB(row.TMDB_ID).then(function(data){
                 images[index] = data[0];
                 overviews[index] = data[1];
-                console.log("Found image: " + data[0] + " for ID: " + row.movieID);
+                console.log("Found image: " + data[0] + " for ID: " + row.TMDB_ID);
             }));
         });
         
@@ -181,10 +181,6 @@ app.get('/', function (request, response){
                     throw err;
                 }
                 else{
-                    
-                    console.log(data[0][0]);
-                    console.log(data[0][1]);
-                    
                     response.render('pages/index.ejs', {
                         siteTitle : siteTitle,
                         pageTitle : "Movies",
@@ -200,11 +196,6 @@ app.get('/', function (request, response){
     }).catch(function(e){
         console.log(e.stack);
     });
-    /*response.render('pages/index.ejs', {
-                siteTitle : siteTitle,
-                pageTitle : "Movies",
-            movies : null
-            });*/
 });
 
 
@@ -240,23 +231,27 @@ app.post('/dvd/add/:movieID', function(request, response){
     
     TheMovieDB.movieInfo({id: id}, function(err, result){
         
-        var query = "INSERT INTO Movies (movieID, title, genre, rating, " +
-                    "year, watched, userID)";
+        var query = "INSERT INTO movies (title, genre, rating, " + 
+            "year, watched, TMDB_ID, userID" +
+        ")";
+        
+        userID = 1; // debug since session handling isnt here yet
+        
         query += " VALUES (";
-            query += "'" + id + "',";
             query += " '" + result.title + "',";
             query += " 'UNIMPLEMENTED',";   //NOT IMPLEMENTED!
             query += " '" + result.vote_average + "',";
             query += " '" + result.release_date + "',";
             query += " " + "0" + ",";
-            query += " " + 12345; // NOT IMPLEMENTED!
+            query += " '" + id + "',";
+            query += " (SELECT userID FROM users WHERE userID = " + userID + ")"
         query += ")";
         
         console.log("[ADDING ENTRY] Query  :\n" + query);
         
         dbConnection.query(query, function(err, result){
             if(err) throw err;
-            response.redirect(baseURL);
+            response.redirect(baseURL); 
         });
     });
 });
@@ -293,12 +288,12 @@ app.post('/dvd/add', function(request, response){
 
 //Display form to edit movie entry
 app.get('/dvd/edit/:movieID', function(request, response){
-    dbConnection.query("SELECT * FROM Movies WHERE movieID = '" + request.params.movieID + "'", 
+    dbConnection.query("SELECT * FROM movies WHERE movieID = '" + request.params.movieID + "'", 
     function(err,result){
         response.render('pages/edit-dvd.ejs',{
             siteTitle : siteTitle,
             pageTitle : "Editing Movie : " + result[0].title,
-            movie : result,
+            movie : result
         });
     });
 });
@@ -307,14 +302,12 @@ app.get('/dvd/edit/:movieID', function(request, response){
 
 //Update movie entry with edited data
 app.post('/dvd/edit/:movieID', function(request, response){
-    var query = "UPDATE Movies SET";
+    var query = "UPDATE movies SET";
     query += " title = '" + request.body.title + "',";
     query += " genre = 'UNIMPLEMENTED',";
     query += " rating = '" + request.body.rating + "',";
     query += " year = '" + request.body.release_date + "',";
     query += " watched = '" + request.body.watched + "',";
-    query += " userID = '" + request.body.userID + "'";
-    
     query += " WHERE movieID = " + request.body.movieID + ";";
     
     console.log("[EDITING ENTRY] Query :\n" + query);
@@ -334,7 +327,7 @@ app.get('/dvd/delete/:movieID', function(request, response){
     
     console.log("[DELETING ENTRY] Deleted Item " + request.params.movieID);
     
-    dbConnection.query("DELETE FROM Movies WHERE movieID='" + request.params.movieID + "'", 
+    dbConnection.query("DELETE FROM movies WHERE movieID='" + request.params.movieID + "'", 
     function(err, result){
         if(err) throw err;
         if(result.affectedRows){

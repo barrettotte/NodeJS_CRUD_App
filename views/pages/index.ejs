@@ -17,13 +17,13 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width:8%;text-align:center">Movie ID</th>
-                    <th style="width:15%;">Title</th>
-                    <th style="width:10%">Genre</th>
+                    <th style="width:8%;text-align:center">TMDB ID</th>
+                    <th style="width:15%;text-align:center">Title</th>
+                    <th style="width:10%;text-align:center">Genre</th>
                     <th style="width:10%;text-align:center">Rating</th>
-                    <th style="width:10%;">Release Date</th>
+                    <th style="width:10%;text-align:center">Release Date</th>
                     <th style="width:8%;text-align:center">Cover Art</th>
-                    <th style="width:40%">Overview</th>
+                    <th style="width:40%;text-align:center">Overview</th>
                     
                     <!--- Add logic for only showing up if an admin user-->
                     <th solspan="2" style="width:30%;text-align:center">Actions</th>
@@ -32,12 +32,12 @@
             <tbody>
                 <% movies.forEach(function(movie, index){ %>
                     <tr>
-                        <td style="width:8%;text-align:center"><%= movie.movieID %></td>
-                        <td style="width:15%"><%= movie.title %></td>
-                        <td style="width:10%;"><%= "UNIMPLEMENTED" %></td>
+                        <td style="width:8%;text-align:center"><%= movie.TMDB_ID %></td>
+                        <td style="width:15%;text-align:center"><%= movie.title %></td>
+                        <td style="width:10%;text-align:center"><%= "UNIMPLEMENTED" %></td>
                         <td style="width:10%;text-align:center"><%= movie.rating %></td>
-                        <td style="width:10%"><%= movie.year %></td>
-                        <td style = "width:8%">
+                        <td style="width:10%;text-align:center"><%= movie.year %></td>
+                        <td style = "width:8%;text-align:center">
                             <img src="<%= images[index] %>"
                             alt= "<%= movie.title %>" width = 125px; height = 175px;/>
                         </td>
